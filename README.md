@@ -1,5 +1,5 @@
 # adventOfCode2024
-This repository keeps track of all the work done for the **Advent of code 2024** 🎄🎁💻
+This repository keeps track of all the work done for the [**Advent of code 2024**](https://adventofcode.com/2024) 🎄🎁💻
 
 # How to run 🏃
 ```
