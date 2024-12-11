@@ -1,4 +1,5 @@
 #!/usr/bin/bash
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 day=-1
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -16,15 +17,14 @@ if [ "$day" == -1 ]; then
   echo "Argument --day is not passed"
   exit 1
 fi
-
-mkdir day${day}
-cd day${day}
-mkdir inputs
-touch inputs/real.txt
-touch inputs/test.txt
-touch day${day}.go
+DAY_DIR="$SCRIPT_DIR/day${day}"
+mkdir -p $DAY_DIR/inputs
+touch $DAY_DIR/inputs/real.txt
+touch $DAY_DIR/inputs/test.txt
+cat $SCRIPT_DIR/templates/dayX.go > $DAY_DIR/day${day}.go
+cat $SCRIPT_DIR/templates/dayX_README.md > $DAY_DIR/README.md
+cd $DAY_DIR
 go mod init adventOfCode2024/day${day}
-cat ../dayX.go.template > day${day}.go
 go mod edit -replace adventOfCode2024/util=../util
 go mod tidy
-cd ..
+cd $SCRIPT_DIR
