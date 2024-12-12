@@ -1,1 +1,1 @@
-[Puzzle](https://adventofcode.com/2024/day/<DAY>)
+[Puzzle](https://adventofcode.com/2024/day/12)
