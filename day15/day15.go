@@ -134,17 +134,7 @@ func move(d *data, x, y, dx, dy int) bool {
   return false
 }
 
-func addToBlock(block *[][]int, x, y int) {
-  for _, b := range *block {
-    if x == b[0] && y == b[0] {
-      return
-    }
-  }
-  *block = append(*block, []int{x, y})
-}
-
-func checkMoveWideUD(d *data, x, y, dx, dy int, block *[][]int, paired bool) bool {
-  addToBlock(block, x, y)
+func checkMoveWideUD(d *data, x, y, dx, dy int, paired bool) bool {
   newX := x + dx
   newY := y + dy
   if d.warehouse[newX][newY] == rune('#') {
@@ -152,23 +142,23 @@ func checkMoveWideUD(d *data, x, y, dx, dy int, block *[][]int, paired bool) boo
   }
   if d.warehouse[newX][newY] == rune('.') {
     if !paired && d.warehouse[x][y] == rune(']') {
-      if !checkMoveWideUD(d, x, y-1, dx, dy, block, true) {
+      if !checkMoveWideUD(d, x, y-1, dx, dy, true) {
         return false
       }
     } else if !paired && d.warehouse[x][y] == rune('[') {
-      if !checkMoveWideUD(d, x, y+1, dx, dy, block, true) {
+      if !checkMoveWideUD(d, x, y+1, dx, dy, true) {
         return false
       }
     }
     return true
   }
-  if checkMoveWideUD(d, newX, newY, dx, dy, block, false) {
+  if checkMoveWideUD(d, newX, newY, dx, dy, false) {
     if !paired && d.warehouse[x][y] == rune(']') {
-      if !checkMoveWideUD(d, x, y-1, dx, dy, block, true) {
+      if !checkMoveWideUD(d, x, y-1, dx, dy, true) {
         return false
       }
     } else if !paired && d.warehouse[x][y] == rune('[') {
-      if !checkMoveWideUD(d, x, y+1, dx, dy, block, true) {
+      if !checkMoveWideUD(d, x, y+1, dx, dy, true) {
         return false
       }
     }
@@ -239,7 +229,7 @@ func task2(d *data, debug bool) {
     case rune('<'), rune('>'):
       move(d, robotX, robotY, dx, dy)
     case rune('^'), rune('v'):
-      if checkMoveWideUD(d, robotX, robotY, dx, dy, &[][]int{}, false) {
+      if checkMoveWideUD(d, robotX, robotY, dx, dy, false) {
         moveWideUD(d, robotX, robotY, dx, dy, false)
       }
     }
