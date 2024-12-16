@@ -33,3 +33,51 @@ func ProcessArgs(args []string) (string, bool, error) {
   }
   return absInputsPath, debug, nil
 }
+
+func TurnRight(direction rune) rune {
+  switch direction {
+  case rune('^'):
+    return rune('>')
+  case rune('>'):
+    return rune('v')
+  case rune('v'):
+    return rune('<')
+  case rune('<'):
+    return rune('^')
+  default:
+    fmt.Println("Wrong direction provided")
+    return direction
+  }
+}
+
+func TurnLeft(direction rune) rune {
+  switch direction {
+  case rune('^'):
+    return rune('<')
+  case rune('<'):
+    return rune('v')
+  case rune('v'):
+    return rune('>')
+  case rune('>'):
+    return rune('^')
+  default:
+    fmt.Println("Wrong direction provided")
+    return direction
+  }
+}
+
+func TranslateDirection(direction rune) (int, int) {
+  switch direction {
+  case rune('^'):
+    return -1, 0
+  case rune('<'):
+    return 0, -1
+  case rune('v'):
+    return 1, 0
+  case rune('>'):
+    return 0, 1
+  default:
+    fmt.Println("Wrong direction provided")
+    return 0, 0
+  }
+}
