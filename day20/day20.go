@@ -77,33 +77,6 @@ func findStart(data [][]rune) (int, int) {
   return -1, -1
 }
 
-func getCheatArea(size int) [][]int {
-  cheatArea := [][]int{}
-  for i := 0; i <= size; i++ {
-    for j := 0; j <= size - i; j++ {
-      for _, combo := range [][]int{
-        {i,j},
-        {i,-j},
-        {-i,j},
-        {-i,-j},
-      } {
-        contains := false
-        for _, ca := range cheatArea {
-          if ca[0] == combo[0] && ca[1] == combo[1] {
-            contains = true
-            break
-          }
-        }
-        if contains {
-          continue
-        }
-        cheatArea = append(cheatArea, combo)
-      }
-    }
-  }
-  return cheatArea
-}
-
 func containsCheat(s []*cheat, cheat *cheat) bool {
   for _, c := range s {
     if c.start.x != cheat.start.x || c.start.y != cheat.start.y {
@@ -124,9 +97,12 @@ func abs(x int) int {
   return x
 }
 
-func findCheats(data [][]rune, costMatrix [][]int, path *queue, cheatSize int, limit int, debug bool) int {
+func distance(a, b *node) int {
+  return abs(a.x - b.x) + abs(a.y - b.y)
+}
+
+func findCheats(path *queue, cheatSize int, limit int, debug bool) int {
   result := 0
-  cheatArea := getCheatArea(cheatSize)
   cheats := []*cheat{}
   originalLen := len(path.data)
   cnt := 0
@@ -136,28 +112,19 @@ func findCheats(data [][]rune, costMatrix [][]int, path *queue, cheatSize int, l
       fmt.Printf("%d/%d\n", cnt, originalLen)
     }
     currNode := path.pop()
-    for _, direction := range cheatArea {
-      newX := currNode.x + direction[0]
-      newY := currNode.y + direction[1]
-      if newX < 0 || newY < 0 || newX >= len(costMatrix) || newY >= len(costMatrix[0]) {
+    for _, potentialNode := range path.data {
+      stepsTaken := distance(currNode, potentialNode)
+      if stepsTaken > cheatSize {
         continue
       }
-      newCost := costMatrix[newX][newY]
-      if newCost == -1 {
-        continue
-      }
-      if newCost < currNode.cost {
-        continue
-      }
-      stepsTaken := abs(direction[0]) + abs(direction[1])
-      saving := newCost - currNode.cost - stepsTaken
+      saving := potentialNode.cost - currNode.cost - stepsTaken
       if saving <= 0 {
         continue
       }
       newCheat := &cheat{
         start: currNode, 
-        end: &node{x: newX, y: newY, cost: newCost, symbol: data[newX][newY]},
-        cost: newCost - currNode.cost - stepsTaken,
+        end: potentialNode,
+        cost: saving,
       }
       if containsCheat(cheats, newCheat) {
         continue
@@ -187,7 +154,7 @@ func findCheats(data [][]rune, costMatrix [][]int, path *queue, cheatSize int, l
   return result
 }
 
-func runTrack(data [][]rune, debug bool) ([][]int, *queue) {
+func runTrack(data [][]rune, debug bool) *queue {
   q := &queue{data: []*node{}}
   path := &queue{data: []*node{}}
   startX, startY := findStart(data)
@@ -217,7 +184,7 @@ func runTrack(data [][]rune, debug bool) ([][]int, *queue) {
           fmt.Println()
         }
       }
-      return costMatrix, path
+      return path
     }
     for _, direction := range [][]int{
       {1,0},
@@ -238,20 +205,20 @@ func runTrack(data [][]rune, debug bool) ([][]int, *queue) {
       q.push(&node{x: newX, y: newY, cost: newCost, symbol: data[newX][newY]})
     }
   }
-  return costMatrix, path
+  return path
 }
 
 func task1(data [][]rune, debug bool) {
   result := 0
-  costMatrix, path := runTrack(data, debug)
-  result = findCheats(data, costMatrix, path, 2, 100, debug)
+  path := runTrack(data, debug)
+  result = findCheats(path, 2, 100, debug)
   fmt.Printf("Task 1: %d\n", result)
 }
 
 func task2(data [][]rune, debug bool) {
   result := 0
-  costMatrix, path := runTrack(data, debug)
-  result = findCheats(data, costMatrix, path, 20, 100, debug)
+  path := runTrack(data, debug)
+  result = findCheats(path, 20, 100, debug)
   fmt.Printf("Task 2: %d\n", result)
 }
 
